@@ -6,8 +6,8 @@ const Result = ({navigation, route}) => {
   const {score} = route.params;
   return (
     <View style={styles.container}>
-      <Title titleText="Results" />
-      <Text style={styles.scoreValue}>Score: {score}</Text>
+      <Title titleText="Results 🏆" />
+      <Text style={styles.scoreValue}>Score: {score} points</Text>
       <View style={styles.bannerContainer}>
         <Image
           source={
@@ -23,7 +23,9 @@ const Result = ({navigation, route}) => {
         <TouchableOpacity
           onPress={() => navigation.navigate('Home')}
           style={styles.button}>
-          <Text style={styles.buttonText}>Go to Home</Text>
+          <Text style={styles.buttonText}>
+            {score > 50 ? 'ONE MORE TIME? 🤔' : 'TRY AGAIN! 😂'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 40,
+    marginBottom: 60,
     alignSelf: 'center',
   },
   buttonText: {fontSize: 18, fontWeight: '600', color: 'white'},

@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 
-// function to shuffle the options
+// Function to shuffle the options
 const shuffleOptions = optionsArray => {
   for (let i = optionsArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -14,14 +14,21 @@ const Quiz = ({navigation}) => {
   const [ques, setQues] = useState(0);
   const [options, setOptions] = useState([]);
   const [score, setScore] = useState(0);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const getQuiz = async () => {
-    const url =
-      'https://opentdb.com/api.php?amount=10&category=12&difficulty=medium&type=multiple&encode=url3986';
-    const response = await fetch(url);
-    const data = await response.json();
-    setQuestions(data.results);
-    setOptions(generateOptions(data.results[0]));
+    try {
+      const url =
+        'https://opentdb.com/api.php?amount=10&category=12&difficulty=medium&type=multiple&encode=url3986';
+      const response = await fetch(url);
+      const data = await response.json();
+      setQuestions(data.results);
+      setOptions(generateOptions(data.results[0]));
+      setLoading(false); // Set loading to false after fetching data
+    } catch (error) {
+      console.error('Error fetching quiz data:', error);
+      setLoading(false); // Ensure loading is false in case of error
+    }
   };
 
   useEffect(() => {
@@ -44,73 +51,71 @@ const Quiz = ({navigation}) => {
 
   const handleSelectedOption = _option => {
     if (_option === questions[ques].correct_answer) {
+      // correct
       setScore(score + 10);
+    } else {
+      // incorrect
+      setScore(score - 5);
     }
-    if (ques !== 9) {
-      setQues(ques + 1);
-      setOptions(generateOptions(questions[ques + 1]));
+    if (ques === 9) {
+      navigation.navigate('Result', {score});
+    } else {
+      handleNextPress(); // Move to the next question
     }
   };
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  // Calculate progress bar width
+  const progressBarWidth = ((ques + 1) / questions.length) * 100;
 
   return (
     <View style={styles.container}>
       {questions.length > 0 ? (
         <View style={styles.parent}>
+          <View style={styles.progressBarContainer}>
+            <Text style={styles.progressText}>
+              {ques + 1}/{questions.length}
+            </Text>
+            <View
+              style={[styles.progressBar, {width: `${progressBarWidth}%`}]}
+            />
+          </View>
           <View style={styles.top}>
             <Text style={styles.question}>
               Q. {decodeURIComponent(questions[ques].question)}
             </Text>
           </View>
           <View style={styles.options}>
-            <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => handleSelectedOption(options[0])}>
-              <Text style={styles.optionText}>
-                {decodeURIComponent(options[0])}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => handleSelectedOption(options[1])}>
-              <Text style={styles.optionText}>
-                {decodeURIComponent(options[1])}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => handleSelectedOption(options[2])}>
-              <Text style={styles.optionText}>
-                {decodeURIComponent(options[2])}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => handleSelectedOption(options[3])}>
-              <Text style={styles.optionText}>
-                {decodeURIComponent(options[3])}
-              </Text>
-            </TouchableOpacity>
+            {options.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.optionButton}
+                onPress={() => handleSelectedOption(option)}>
+                <Text style={styles.optionText}>
+                  {decodeURIComponent(option)}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
           <View style={styles.bottom}>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>SKIP</Text>
-            </TouchableOpacity>
-            {ques !== 9 && (
+            {ques < questions.length - 1 ? (
               <TouchableOpacity style={styles.button} onPress={handleNextPress}>
-                <Text style={styles.buttonText}>NEXT</Text>
+                <Text style={styles.buttonText}>SKIP QUESTION ➡️</Text>
               </TouchableOpacity>
-            )}
-            {ques === 9 && (
+            ) : (
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate('Result', {score: score})}>
+                onPress={() => navigation.navigate('Result', {score})}>
                 <Text style={styles.buttonText}>SHOW RESULTS</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
       ) : (
-        <Text>Loading...</Text>
+        <Text>No questions available</Text>
       )}
     </View>
   );
@@ -130,7 +135,7 @@ const styles = StyleSheet.create({
   bottom: {
     marginBottom: 12,
     paddingVertical: 16,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     flexDirection: 'row',
   },
   button: {
@@ -153,5 +158,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDBF1',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  progressBarContainer: {
+    marginTop: 50,
+    marginBottom: 25,
+    height: 20, // Make the bar thicker
+    backgroundColor: '#DDDBF1',
+    borderRadius: 5,
+    marginVertical: 16,
+    position: 'relative',
+    justifyContent: 'center', // Center the progress bar vertically
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#3C4F76',
+    borderRadius: 5,
+  },
+  progressText: {
+    position: 'absolute',
+    left: 10,
+    top: -25, // Position above the progress bar
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#3C4F76',
   },
 });
