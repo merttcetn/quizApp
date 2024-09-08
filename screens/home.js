@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 60,
   },
-  buttonText: {fontSize: 16, fontWeight: '600', color: 'white'},
+  buttonText: {fontSize: 18, fontWeight: '600', color: 'white'},
   description: {
     justifyContent: 'center',
     alignItems: 'center', // Center text horizontally
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     padding: 5,
-    fontSize: 16,
+    fontSize: 18,
     textAlign: 'center', // Center text alignment
     fontWeight: '500',
   },
