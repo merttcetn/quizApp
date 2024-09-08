@@ -12,9 +12,9 @@ QuizApp is a music quiz application built using React Native. It fetches multipl
 
 ## Screenshots
 
-![In App Screenshot](screenshots/screenshot.png)
-![In App Screenshot](screenshots/screenshot2.png)
-![In App Screenshot](screenshots/screenshot3.png)
+<img src="screenshots/screenshot.png" alt="In App Screenshot" width="300"/>
+<img src="screenshots/screenshot2.png" alt="In App Screenshot" width="300"/>
+<img src="screenshots/screenshot3.png" alt="In App Screenshot" width="300"/>
 
 Insert screenshots or GIFs of the app here to give viewers a visual idea of how your app works.
 
